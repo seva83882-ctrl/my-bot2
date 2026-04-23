@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Мой мини-апп</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 20px;
+            padding-bottom: 40px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--tg-theme-secondary-bg-color);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--tg-theme-text-color);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--tg-theme-bg-color);
+            border: 1px solid var(--tg-theme-hint-color);
+            border-radius: 16px;
+            color: var(--tg-theme-text-color);
+            font-size: 16px;
+            margin: 8px 0;
+            font-family: inherit;
+            outline: none;
+        }
+        button {
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 16px;
+            padding: 14px 20px;
+            font-size: 17px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        button:active {
+            transform: scale(0.97);
+        }
+        .affiliate-btn {
+            background: var(--tg-theme-bg-color);
+            border: 1.5px solid var(--tg-theme-button-color);
+            color: var(--tg-theme-button-color);
+            margin-top: 8px;
+        }
+        .result-text {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--tg-theme-bg-color);
+            border-radius: 16px;
+            word-break: break-all;
+            font-size: 14px;
+        }
+        .badge {
+            background: var(--tg-theme-hint-color);
+            color: var(--tg-theme-text-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--tg-theme-hint-color);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="card-title">◽️ Генератор пароля</div>
+        <button id="genStrong">Сложный пароль 14 символов</button>
+        <div id="passwordResult" class="result-text">Нажми кнопку</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">◽️ Погода в городе</div>
+        <input type="text" id="cityInput" placeholder="Введи город (Москва, London)" value="Москва">
+        <button id="getWeatherBtn">Узнать погоду</button>
+        <div id="weatherResult" class="result-text">Введи город и нажми</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">💰 Зарабатывай с нами</div>
+        <button class="affiliate-btn" data-url="https://www.bestchange.ru/?p=1341413">BestChange — до $5 за пользователя + 30% дохода</button>
+        <div class="badge" style="margin-top: 12px;">Партнёрская программа BestChange</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🎯 Реклама</div>
+        <div id="telegramAdsContainer" style="min-height: 100px; text-align: center;">
+            <div class="badge">Telegram Ads (замени на свой код)</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">💬 Фидбек</div>
+        <textarea id="feedbackText" rows="2" placeholder="Напиши свои идеи или сообщение"></textarea>
+        <button id="sendFeedbackBtn">Отправить</button>
+        <div id="feedbackResult" style="font-size: 13px; margin-top: 8px;"></div>
+    </div>
+
+    <div class="footer">
+        Mini App работает через Telegram WebApp
+    </div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    function sendToBot(action, data) {
+        try {
+            const payload = JSON.stringify({
+                action: action,
+                data: data,
+                user_id: tg.initDataUnsafe?.user?.id || 0,
+                username: tg.initDataUnsafe?.user?.username || ''
+            });
+            tg.sendData(payload);
+        } catch(e) {}
+    }
+
+    function generatePassword(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+=-';
+        let pwd = '';
+        for (let i = 0; i < length; i++) {
+            pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return pwd;
+    }
+
+    document.getElementById('genStrong').addEventListener('click', () => {
+        const pwd = generatePassword(14);
+        document.getElementById('passwordResult').innerHTML = `◽️ Пароль: <strong>${pwd}</strong>`;
+        tg.HapticFeedback.impactOccurred('light');
+        sendToBot('generate_password', { password: pwd });
+    });
+
+    document.getElementById('getWeatherBtn').addEventListener('click', async () => {
+        const city = document.getElementById('cityInput').value.trim();
+        if (!city) {
+            document.getElementById('weatherResult').innerHTML = '◽️ Введи город';
+            return;
+        }
+        document.getElementById('weatherResult').innerHTML = '◽️ Загрузка...';
+        tg.HapticFeedback.impactOccurred('light');
+        try {
+            const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
+            const geoResp = await fetch(geoUrl);
+            const geoData = await geoResp.json();
+            if (!geoData.results || geoData.results.length === 0) {
+                document.getElementById('weatherResult').innerHTML = '◽️ Город не найден';
+                return;
+            }
+            const { latitude: lat, longitude: lon, name } = geoData.results[0];
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
+            const weatherResp = await fetch(weatherUrl);
+            const weatherData = await weatherResp.json();
+            if (weatherData.current_weather) {
+                const temp = weatherData.current_weather.temperature;
+                const wind = weatherData.current_weather.windspeed;
+                document.getElementById('weatherResult').innerHTML = `◽️ ${name}: ${temp}°C, ветер ${wind} м/с`;
+                sendToBot('weather_check', { city: name, temperature: temp });
+            } else {
+                document.getElementById('weatherResult').innerHTML = '◽️ Ошибка погоды';
+            }
+        } catch (err) {
+            document.getElementById('weatherResult').innerHTML = '◽️ Ошибка сети';
+        }
+    });
+
+    document.querySelectorAll('.affiliate-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const url = btn.getAttribute('data-url');
+            if (url) {
+                tg.openLink(url);
+                sendToBot('affiliate_click', { platform: btn.innerText.substring(0, 40), url: url });
+            }
+            tg.HapticFeedback.impactOccurred('heavy');
+        });
+    });
+
+    document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
+        const fb = document.getElementById('feedbackText').value.trim();
+        if (!fb) {
+            document.getElementById('feedbackResult').innerHTML = '◽️ Напиши сообщение';
+            return;
+        }
+        sendToBot('user_feedback', { text: fb });
+        document.getElementById('feedbackResult').innerHTML = '◽️ Спасибо, отправлено!';
+        document.getElementById('feedbackText').value = '';
+        tg.HapticFeedback.impactOccurred('light');
+        setTimeout(() => {
+            document.getElementById('feedbackResult').innerHTML = '';
+        }, 3000);
+    });
+
+    sendToBot('app_opened', { timestamp: Date.now() });
+</script>
+</body>
+</html>
