@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Мой мини-апп</title>
+    <title>Ахуенный мини-апп</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -14,8 +14,8 @@
         body {
             background: var(--tg-theme-bg-color);
             color: var(--tg-theme-text-color);
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 20px;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            padding: 16px;
             padding-bottom: 40px;
         }
         .container {
@@ -27,6 +27,7 @@
             border-radius: 24px;
             padding: 20px;
             margin-bottom: 16px;
+            transition: 0.2s;
         }
         .card-title {
             font-size: 20px;
@@ -34,12 +35,11 @@
             margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--tg-theme-text-color);
+            gap: 8px;
         }
-        input, textarea {
+        input, select, textarea {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 16px;
             background: var(--tg-theme-bg-color);
             border: 1px solid var(--tg-theme-hint-color);
             border-radius: 16px;
@@ -54,84 +54,151 @@
             color: var(--tg-theme-button-text-color);
             border: none;
             border-radius: 16px;
-            padding: 14px 20px;
-            font-size: 17px;
+            padding: 12px 16px;
+            font-size: 16px;
             font-weight: 600;
             width: 100%;
             margin-top: 12px;
             cursor: pointer;
-            transition: transform 0.1s ease;
         }
         button:active {
             transform: scale(0.97);
         }
-        .affiliate-btn {
-            background: var(--tg-theme-bg-color);
-            border: 1.5px solid var(--tg-theme-button-color);
-            color: var(--tg-theme-button-color);
+        .row {
+            display: flex;
+            gap: 12px;
             margin-top: 8px;
         }
-        .result-text {
+        .row button {
+            margin-top: 0;
+        }
+        .result {
             margin-top: 12px;
             padding: 12px;
             background: var(--tg-theme-bg-color);
             border-radius: 16px;
-            word-break: break-all;
             font-size: 14px;
+            word-break: break-word;
         }
         .badge {
             background: var(--tg-theme-hint-color);
             color: var(--tg-theme-text-color);
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             display: inline-block;
         }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: var(--tg-theme-hint-color);
+        hr {
+            margin: 16px 0;
+            border-color: var(--tg-theme-hint-color);
+            opacity: 0.3;
+        }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--tg-theme-hint-color);
+        }
+        .todo-text {
+            flex: 1;
+        }
+        .delete-todo {
+            background: none;
+            border: none;
+            color: red;
+            font-size: 20px;
+            width: auto;
+            margin: 0;
+            padding: 0 8px;
+        }
+        .done {
+            text-decoration: line-through;
+            opacity: 0.6;
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- 1. Генератор паролей -->
     <div class="card">
-        <div class="card-title">◽️ Генератор пароля</div>
-        <button id="genStrong">Сложный пароль 14 символов</button>
-        <div id="passwordResult" class="result-text">Нажми кнопку</div>
+        <div class="card-title">🔐 Генератор пароля</div>
+        <div class="row">
+            <button id="genPwd8">8 символов</button>
+            <button id="genPwd12">12 символов</button>
+            <button id="genPwd16">16 символов</button>
+        </div>
+        <div id="pwdResult" class="result">Нажми кнопку</div>
     </div>
 
+    <!-- 2. Погода -->
     <div class="card">
-        <div class="card-title">◽️ Погода в городе</div>
-        <input type="text" id="cityInput" placeholder="Введи город (Москва, London)" value="Москва">
-        <button id="getWeatherBtn">Узнать погоду</button>
-        <div id="weatherResult" class="result-text">Введи город и нажми</div>
+        <div class="card-title">🌤 Погода</div>
+        <input type="text" id="cityInput" placeholder="Город (например, Moscow)">
+        <button id="weatherBtn">Узнать погоду</button>
+        <div id="weatherResult" class="result">Введи город</div>
     </div>
 
+    <!-- 3. Курс валют -->
     <div class="card">
-        <div class="card-title">💰 Зарабатывай с нами</div>
-        <button class="affiliate-btn" data-url="https://www.bestchange.ru/?p=1341413">BestChange — до $5 за пользователя + 30% дохода</button>
-        <div class="badge" style="margin-top: 12px;">Партнёрская программа BestChange</div>
+        <div class="card-title">💰 Курс валют</div>
+        <div class="row">
+            <input type="text" id="currencyFrom" placeholder="Из (USD)">
+            <input type="text" id="currencyTo" placeholder="В (RUB)">
+        </div>
+        <button id="currencyBtn">Конвертировать</button>
+        <div id="currencyResult" class="result">1 USD = ... RUB</div>
     </div>
 
+    <!-- 4. Викторина -->
     <div class="card">
-        <div class="card-title">🎯 Реклама</div>
-        <div id="telegramAdsContainer" style="min-height: 100px; text-align: center;">
-            <div class="badge">Telegram Ads (замени на свой код)</div>
+        <div class="card-title">❓ Викторина</div>
+        <div id="quizQuestion" class="result">Нажми "Начать викторину"</div>
+        <div id="quizOptions" class="row"></div>
+        <button id="quizStartBtn">Начать викторину</button>
+        <div id="quizScore" class="badge" style="margin-top: 12px;">Счёт: 0</div>
+    </div>
+
+    <!-- 5. Список дел (todo) -->
+    <div class="card">
+        <div class="card-title">📝 Список дел</div>
+        <input type="text" id="todoInput" placeholder="Новое дело">
+        <button id="addTodoBtn">Добавить</button>
+        <div id="todoList"></div>
+    </div>
+
+    <!-- 6. Напоминание (через секунды) -->
+    <div class="card">
+        <div class="card-title">⏰ Напоминание</div>
+        <input type="number" id="remindSeconds" placeholder="Через сколько секунд">
+        <input type="text" id="remindText" placeholder="Текст напоминания">
+        <button id="setRemindBtn">Установить</button>
+        <div id="remindStatus" class="result"></div>
+    </div>
+
+    <!-- 7. Реферальные ссылки (партнёрки) -->
+    <div class="card">
+        <div class="card-title">🤝 Заработок</div>
+        <button id="refBestChange">BestChange — до $5 за пользователя</button>
+        <button id="refBinance">Binance — до 50% комиссии</button>
+        <button id="refBybit">Bybit — бонусы до $665</button>
+        <div class="badge" style="margin-top: 12px;">Переходи и регистрируйся</div>
+    </div>
+
+    <!-- 8. Telegram Ads (заглушка) -->
+    <div class="card">
+        <div class="card-title">📢 Реклама</div>
+        <div id="adContainer" style="min-height: 100px; text-align: center; background: var(--tg-theme-hint-color); border-radius: 16px; padding: 16px;">
+            Реклама загружается...
         </div>
     </div>
 
+    <!-- 9. Фидбек -->
     <div class="card">
         <div class="card-title">💬 Фидбек</div>
-        <textarea id="feedbackText" rows="2" placeholder="Напиши свои идеи или сообщение"></textarea>
+        <textarea id="feedbackMsg" rows="2" placeholder="Напиши свои пожелания или сообщи об ошибке"></textarea>
         <button id="sendFeedbackBtn">Отправить</button>
-        <div id="feedbackResult" style="font-size: 13px; margin-top: 8px;"></div>
-    </div>
-
-    <div class="footer">
-        Mini App работает через Telegram WebApp
+        <div id="feedbackStatus" class="result"></div>
     </div>
 </div>
 
@@ -142,92 +209,227 @@
 
     function sendToBot(action, data) {
         try {
-            const payload = JSON.stringify({
-                action: action,
-                data: data,
-                user_id: tg.initDataUnsafe?.user?.id || 0,
-                username: tg.initDataUnsafe?.user?.username || ''
-            });
-            tg.sendData(payload);
-        } catch(e) {}
+            tg.sendData(JSON.stringify({ action, data, user_id: tg.initDataUnsafe?.user?.id || 0 }));
+        } catch(e) { console.error(e); }
     }
 
-    function generatePassword(length) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+=-';
+    // 1. Генератор паролей
+    const genPwd = (len) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
         let pwd = '';
-        for (let i = 0; i < length; i++) {
-            pwd += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+        for (let i = 0; i < len; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
         return pwd;
-    }
-
-    document.getElementById('genStrong').addEventListener('click', () => {
-        const pwd = generatePassword(14);
-        document.getElementById('passwordResult').innerHTML = `◽️ Пароль: <strong>${pwd}</strong>`;
+    };
+    document.getElementById('genPwd8').onclick = () => {
+        const pwd = genPwd(8);
+        document.getElementById('pwdResult').innerHTML = `🔑 Пароль: <strong>${pwd}</strong>`;
         tg.HapticFeedback.impactOccurred('light');
-        sendToBot('generate_password', { password: pwd });
-    });
+        sendToBot('password', { len: 8, pwd });
+    };
+    document.getElementById('genPwd12').onclick = () => {
+        const pwd = genPwd(12);
+        document.getElementById('pwdResult').innerHTML = `🔑 Пароль: <strong>${pwd}</strong>`;
+        tg.HapticFeedback.impactOccurred('light');
+        sendToBot('password', { len: 12, pwd });
+    };
+    document.getElementById('genPwd16').onclick = () => {
+        const pwd = genPwd(16);
+        document.getElementById('pwdResult').innerHTML = `🔑 Пароль: <strong>${pwd}</strong>`;
+        tg.HapticFeedback.impactOccurred('light');
+        sendToBot('password', { len: 16, pwd });
+    };
 
-    document.getElementById('getWeatherBtn').addEventListener('click', async () => {
+    // 2. Погода (Open-Meteo)
+    async function getWeather() {
         const city = document.getElementById('cityInput').value.trim();
-        if (!city) {
-            document.getElementById('weatherResult').innerHTML = '◽️ Введи город';
-            return;
-        }
-        document.getElementById('weatherResult').innerHTML = '◽️ Загрузка...';
-        tg.HapticFeedback.impactOccurred('light');
+        if (!city) { document.getElementById('weatherResult').innerHTML = 'Введи город'; return; }
+        document.getElementById('weatherResult').innerHTML = '⏳ Загрузка...';
         try {
-            const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
-            const geoResp = await fetch(geoUrl);
-            const geoData = await geoResp.json();
-            if (!geoData.results || geoData.results.length === 0) {
-                document.getElementById('weatherResult').innerHTML = '◽️ Город не найден';
-                return;
-            }
-            const { latitude: lat, longitude: lon, name } = geoData.results[0];
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
-            const weatherResp = await fetch(weatherUrl);
-            const weatherData = await weatherResp.json();
-            if (weatherData.current_weather) {
-                const temp = weatherData.current_weather.temperature;
-                const wind = weatherData.current_weather.windspeed;
-                document.getElementById('weatherResult').innerHTML = `◽️ ${name}: ${temp}°C, ветер ${wind} м/с`;
-                sendToBot('weather_check', { city: name, temperature: temp });
-            } else {
-                document.getElementById('weatherResult').innerHTML = '◽️ Ошибка погоды';
-            }
-        } catch (err) {
-            document.getElementById('weatherResult').innerHTML = '◽️ Ошибка сети';
+            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru`);
+            const geoData = await geoRes.json();
+            if (!geoData.results) throw new Error('Город не найден');
+            const { latitude, longitude, name } = geoData.results[0];
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+            const weatherData = await weatherRes.json();
+            const temp = weatherData.current_weather.temperature;
+            const wind = weatherData.current_weather.windspeed;
+            document.getElementById('weatherResult').innerHTML = `🌡 ${name}: ${temp}°C, ветер ${wind} м/с`;
+            sendToBot('weather', { city: name, temp });
+        } catch(e) {
+            document.getElementById('weatherResult').innerHTML = '❌ Ошибка: ' + e.message;
         }
-    });
+    }
+    document.getElementById('weatherBtn').onclick = getWeather;
 
-    document.querySelectorAll('.affiliate-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const url = btn.getAttribute('data-url');
-            if (url) {
-                tg.openLink(url);
-                sendToBot('affiliate_click', { platform: btn.innerText.substring(0, 40), url: url });
-            }
-            tg.HapticFeedback.impactOccurred('heavy');
-        });
-    });
+    // 3. Курс валют
+    async function getCurrency() {
+        let from = document.getElementById('currencyFrom').value.trim().toUpperCase();
+        let to = document.getElementById('currencyTo').value.trim().toUpperCase();
+        if (!from || !to) { document.getElementById('currencyResult').innerHTML = 'Введи обе валюты'; return; }
+        document.getElementById('currencyResult').innerHTML = '⏳ Загрузка...';
+        try {
+            const res = await fetch(`https://api.frankfurter.app/latest?from=${from}&to=${to}`);
+            if (!res.ok) throw new Error('Ошибка API');
+            const data = await res.json();
+            const rate = data.rates[to];
+            document.getElementById('currencyResult').innerHTML = `1 ${from} = ${rate} ${to}`;
+            sendToBot('currency', { from, to, rate });
+        } catch(e) {
+            document.getElementById('currencyResult').innerHTML = '❌ Неверный код валюты';
+        }
+    }
+    document.getElementById('currencyBtn').onclick = getCurrency;
 
-    document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
-        const fb = document.getElementById('feedbackText').value.trim();
-        if (!fb) {
-            document.getElementById('feedbackResult').innerHTML = '◽️ Напиши сообщение';
+    // 4. Викторина
+    const questions = [
+        { q: "Столица Франции?", a: "Париж", opts: ["Париж", "Лондон", "Берлин", "Мадрид"] },
+        { q: "2+2*2?", a: "6", opts: ["6", "8", "4", "0"] },
+        { q: "Кто написал 'Война и мир'?", a: "Толстой", opts: ["Толстой", "Достоевский", "Пушкин", "Чехов"] },
+        { q: "Python — это змея?", a: "Да", opts: ["Да", "Нет"] },
+        { q: "Сколько секунд в минуте?", a: "60", opts: ["60", "30", "24", "100"] }
+    ];
+    let quizIndex = 0;
+    let quizScore = 0;
+    let quizActive = false;
+    function renderQuiz() {
+        if (!quizActive) {
+            document.getElementById('quizQuestion').innerHTML = 'Нажми "Начать викторину"';
+            document.getElementById('quizOptions').innerHTML = '';
             return;
         }
-        sendToBot('user_feedback', { text: fb });
-        document.getElementById('feedbackResult').innerHTML = '◽️ Спасибо, отправлено!';
-        document.getElementById('feedbackText').value = '';
-        tg.HapticFeedback.impactOccurred('light');
-        setTimeout(() => {
-            document.getElementById('feedbackResult').innerHTML = '';
-        }, 3000);
-    });
+        if (quizIndex >= questions.length) {
+            document.getElementById('quizQuestion').innerHTML = `Викторина завершена! Правильных: ${quizScore}/${questions.length}`;
+            document.getElementById('quizOptions').innerHTML = '';
+            document.getElementById('quizScore').innerHTML = `Счёт: ${quizScore}`;
+            quizActive = false;
+            sendToBot('quiz_finished', { score: quizScore });
+            return;
+        }
+        const q = questions[quizIndex];
+        document.getElementById('quizQuestion').innerHTML = `❓ Вопрос ${quizIndex+1}: ${q.q}`;
+        let btns = '';
+        q.opts.forEach(opt => {
+            btns += `<button class="quiz-opt" data-opt="${opt}">${opt}</button>`;
+        });
+        document.getElementById('quizOptions').innerHTML = btns;
+        document.querySelectorAll('.quiz-opt').forEach(btn => {
+            btn.onclick = () => {
+                const selected = btn.getAttribute('data-opt');
+                if (selected === q.a) {
+                    quizScore++;
+                    tg.HapticFeedback.impactOccurred('light');
+                } else {
+                    tg.HapticFeedback.impactOccurred('heavy');
+                }
+                quizIndex++;
+                document.getElementById('quizScore').innerHTML = `Счёт: ${quizScore}`;
+                renderQuiz();
+            };
+        });
+    }
+    document.getElementById('quizStartBtn').onclick = () => {
+        quizIndex = 0;
+        quizScore = 0;
+        quizActive = true;
+        renderQuiz();
+        sendToBot('quiz_start', {});
+    };
 
-    sendToBot('app_opened', { timestamp: Date.now() });
+    // 5. Todo-лист
+    let todos = JSON.parse(localStorage.getItem('todos') || '[]');
+    function saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+    function renderTodos() {
+        const container = document.getElementById('todoList');
+        if (!todos.length) { container.innerHTML = '<div class="result">Нет дел</div>'; return; }
+        let html = '';
+        todos.forEach((todo, idx) => {
+            html += `<div class="todo-item">
+                        <span class="todo-text ${todo.done ? 'done' : ''}">${todo.text}</span>
+                        <div>
+                            <button class="delete-todo" data-idx="${idx}" style="background:none;">❌</button>
+                            <button class="toggle-todo" data-idx="${idx}" style="background:none;">${todo.done ? '🔄' : '✅'}</button>
+                        </div>
+                    </div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.delete-todo').forEach(btn => {
+            btn.onclick = () => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                todos.splice(idx, 1);
+                saveTodos();
+                renderTodos();
+                sendToBot('todo_delete', { idx });
+            };
+        });
+        document.querySelectorAll('.toggle-todo').forEach(btn => {
+            btn.onclick = () => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                todos[idx].done = !todos[idx].done;
+                saveTodos();
+                renderTodos();
+                sendToBot('todo_toggle', { idx, done: todos[idx].done });
+            };
+        });
+    }
+    document.getElementById('addTodoBtn').onclick = () => {
+        const text = document.getElementById('todoInput').value.trim();
+        if (!text) return;
+        todos.push({ text, done: false });
+        saveTodos();
+        renderTodos();
+        document.getElementById('todoInput').value = '';
+        sendToBot('todo_add', { text });
+    };
+    renderTodos();
+
+    // 6. Напоминание
+    let remindTimeout = null;
+    document.getElementById('setRemindBtn').onclick = () => {
+        const seconds = parseInt(document.getElementById('remindSeconds').value);
+        const text = document.getElementById('remindText').value.trim();
+        if (isNaN(seconds) || seconds <= 0 || !text) {
+            document.getElementById('remindStatus').innerHTML = '❌ Введи корректные данные';
+            return;
+        }
+        if (remindTimeout) clearTimeout(remindTimeout);
+        remindTimeout = setTimeout(() => {
+            tg.showAlert(`🔔 Напоминание: ${text}`);
+            document.getElementById('remindStatus').innerHTML = '';
+            sendToBot('reminder', { text });
+        }, seconds * 1000);
+        document.getElementById('remindStatus').innerHTML = `✅ Напомню через ${seconds} сек: "${text}"`;
+        sendToBot('reminder_set', { seconds, text });
+    };
+
+    // 7. Реферальные ссылки
+    function openLink(url) {
+        tg.openLink(url);
+        sendToBot('affiliate_click', { url });
+    }
+    document.getElementById('refBestChange').onclick = () => openLink('https://www.bestchange.ru/?p=1341413');
+    document.getElementById('refBinance').onclick = () => openLink('https://accounts.binance.com/register?ref=YOUR_REF');
+    document.getElementById('refBybit').onclick = () => openLink('https://www.bybit.com/invite?ref=YOUR_REF');
+
+    // 8. Telegram Ads заглушка (можно заменить реальным кодом от Adsgram)
+    document.getElementById('adContainer').innerHTML = '<div class="badge">Объявление</div><div>Твой баннер</div>';
+
+    // 9. Фидбек
+    document.getElementById('sendFeedbackBtn').onclick = () => {
+        const msg = document.getElementById('feedbackMsg').value.trim();
+        if (!msg) {
+            document.getElementById('feedbackStatus').innerHTML = '❌ Введи сообщение';
+            return;
+        }
+        tg.sendData(JSON.stringify({ action: 'feedback', text: msg }));
+        document.getElementById('feedbackStatus').innerHTML = '✅ Спасибо, фидбек отправлен!';
+        document.getElementById('feedbackMsg').value = '';
+        setTimeout(() => document.getElementById('feedbackStatus').innerHTML = '', 3000);
+    };
+
+    // Отправка открытия приложения
+    sendToBot('app_opened', { ts: Date.now() });
 </script>
 </body>
 </html>
