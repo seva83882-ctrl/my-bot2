@@ -432,7 +432,6 @@
 
     document.getElementById('adContainer').innerHTML = '<div class="badge">📢 Реклама (замени на свой код)</div><div style="font-size:12px;">Telegram Ads / AdsGram</div>';
 
-    // ---------- 9. Фидбек ----------
     document.getElementById('sendFeedbackBtn').onclick = () => {
         const msg = document.getElementById('feedbackMsg').value.trim();
         if (!msg) {
@@ -444,7 +443,6 @@
         document.getElementById('feedbackMsg').value = '';
         setTimeout(() => document.getElementById('feedbackStatus').innerHTML = '', 3000);
     };
-    sendToBot('app_opened', { ts: Date.now() });
 </script>
 </body>
 </html>
